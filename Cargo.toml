@@ -1,0 +1,9 @@
+[package]
+name = "cfscrape"
+version = "0.1.0"
+authors = ["Syfaro <syfaro@huefox.com>"]
+edition = "2018"
+description = "Wrapper for Python's cfscrape package."
+
+[dependencies]
+pyo3 = "0.9.0-alpha.1"
