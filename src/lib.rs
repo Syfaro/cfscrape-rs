@@ -18,13 +18,21 @@ impl From<PyErr> for Error {
     }
 }
 
+fn print_err(py: Python, err: PyErr) -> PyErr {
+    err.clone_ref(py).print(py);
+    err
+}
+
 static PY_CODE: &str = "cfscrape.get_cookie_string(url, user_agent)";
 
 pub fn get_cookie_string(url: &str, user_agent: Option<&str>) -> Result<CfscrapeData, Error> {
     let gil = Python::acquire_gil();
     let py = gil.python();
 
-    let cfscrape: PyObject = py.import("cfscrape")?.into_py(py);
+    let cfscrape: PyObject = py
+        .import("cfscrape")
+        .map_err(|err| print_err(py, err))?
+        .into_py(py);
 
     let url: PyObject = url.into_py(py);
     let user_agent = user_agent.into_py(py);
@@ -36,8 +44,11 @@ pub fn get_cookie_string(url: &str, user_agent: Option<&str>) -> Result<Cfscrape
     ]
     .into_py_dict(py);
 
-    let (cookies, user_agent): (String, String) =
-        py.eval(PY_CODE, None, Some(&locals))?.extract()?;
+    let (cookies, user_agent): (String, String) = py
+        .eval(PY_CODE, None, Some(&locals))
+        .map_err(|err| print_err(py, err))?
+        .extract()
+        .map_err(|err| print_err(py, err))?;
 
     Ok(CfscrapeData {
         cookies,
