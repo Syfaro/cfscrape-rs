@@ -12,6 +12,14 @@ pub enum Error {
     Python(pyo3::PyErr),
 }
 
+impl std::fmt::Display for Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Cfscrape Error")
+    }
+}
+
+impl std::error::Error for Error {}
+
 impl From<PyErr> for Error {
     fn from(err: PyErr) -> Self {
         Error::Python(err)

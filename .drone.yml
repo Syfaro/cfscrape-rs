@@ -1,0 +1,19 @@
+---
+kind: pipeline
+type: docker
+name: default
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: test
+  image: rustlang/rust:nightly-slim
+  commands:
+  - apt-get update -y
+  - apt-get install python3 python3-pip nodejs -y
+  - pip3 install cfscrape
+  - cargo test
+
+...
